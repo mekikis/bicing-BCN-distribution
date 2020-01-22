@@ -9,25 +9,25 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# settings gia na deixnei olokliro ton pinaka sti consola
+# settings to show the whole table in the console (debugging purposes)
 pd.set_option('display.max_rows', 100)
 pd.set_option('display.max_columns', 11)
 pd.set_option('display.width', 1000)
 for replay in range(400):
-    # site gia na katevasei to dataset
+    # site to download the dataset
     url = "https://www.bicing.barcelona/es/get-stations"
     r = requests.get(url)
     stations_json = json.loads(r.content.decode())
     with open('stations.json', 'w') as json_file:
         json.dump(stations_json['stations'], json_file)
 
-    # diavase to json dataset me tous stathmous san panda
+    # read the json dataset of the bicing stations with panda
     df = pd.read_json(r'stations.json')
-    # enwse onoma me noumero odou
+    # concatenate street name with street number
     df['street'] = df['streetName'] + ' ' + df['streetNumber']
-    # epelexe mono stathmous pou einai energoi
+    # choose only active stations
     df = df[df.status == 1]
-    # peta axrista columns
+    # drop useless columns
     stations = df.drop(['type', 'icon', 'transition_start', 'transition_end', 'streetName', 'streetNumber', 'type_bicing', 'status', 'disponibilidad', 'electrical_bikes','mechanical_bikes'], axis=1)
 
     # reset the index of the stations dataframe
@@ -38,13 +38,13 @@ for replay in range(400):
     fp = 'shape_dense.geojson'
 
     map_df = gpd.read_file(fp)
-    # ftiaxe nea column pou tha orisei to xrwma tou xarti
+    # create new column that defines the map color
     map_df['bike_sum'] = pd.Series([0 for x in range(len(map_df.index))], index=map_df.index)
 
-    # epelexe mono ta poligona kai to parapanw column gia to teliko map
+    # choose only the polygons and the bike_sum columns for the final map
     map_df = map_df[['geometry', 'bike_sum']]
 
-    # # gia kathe poligono des posa stations uparxoun
+    # # count stations in a polygon
     for idx, i in enumerate(map_df.geometry):
         poly = shape(i)
         for counter in range(len(stations)):
