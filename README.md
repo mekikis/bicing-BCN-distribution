@@ -5,4 +5,4 @@ This python script downloads the stations status from the official Bicing BCN we
 
 Example of a single figure:
 
-![Bicing stations status]https://raw.githubusercontent.com/mekikis/bicing-BCN-distribution/master/Figures/status_1571936833.png
+![Bicing stations status](https://raw.githubusercontent.com/mekikis/bicing-BCN-distribution/master/Figures/status_1571936833.png)
